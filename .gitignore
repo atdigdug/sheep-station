@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Static build output
+dist/
+
+# Test and tooling output
+coverage/
+.nyc_output/
+.cache/
+.vite/
+
+# Logs
+*.log
+npm-debug.log*
