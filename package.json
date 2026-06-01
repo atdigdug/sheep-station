@@ -1,0 +1,12 @@
+{
+  "name": "sheep-station",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/dev-server.js",
+    "build": "node scripts/validate.js",
+    "lint": "node scripts/lint.js",
+    "test": "node --test"
+  }
+}
