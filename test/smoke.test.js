@@ -3,8 +3,14 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { requiredStaticFiles, validateStaticApp } from "../scripts/validate.js";
+import {
+  calculateStationValue,
+  cloneInitialStation,
+  resolveYear,
+  validateDecisions
+} from "../logic.js";
 
-test("placeholder app files exist and are non-empty", async () => {
+test("static app files exist and are non-empty", async () => {
   await Promise.all(
     requiredStaticFiles.map(async (file) => {
       const contents = await readFile(file, "utf8");
@@ -20,28 +26,58 @@ test("index page references the expected static assets", async () => {
   assert.match(html, /<script type="module" src="\.\/game\.js"><\/script>/);
 });
 
-test("index page exposes the placeholder mini-game controls", async () => {
+test("index page exposes Sheep Station simulation controls", async () => {
   const html = await readFile("index.html", "utf8");
 
-  assert.match(html, /id="playfield"/);
-  assert.match(html, /id="player"/);
-  assert.match(html, /id="goal"/);
-  assert.match(html, /id="restart-button"/);
-  assert.match(html, /data-direction="up"/);
-  assert.match(html, /data-direction="down"/);
-  assert.match(html, /data-direction="left"/);
-  assert.match(html, /data-direction="right"/);
+  assert.match(html, /id="decision-form"/);
+  assert.match(html, /name="buyAcres"/);
+  assert.match(html, /name="tradeSheep"/);
+  assert.match(html, /name="grazingAcres"/);
+  assert.match(html, /name="feedGrain"/);
+  assert.match(html, /name="sowAcres"/);
+  assert.match(html, /name="sowGrainPerAcre"/);
+  assert.match(html, /id="report-output"/);
+  assert.match(html, /Second Giant Book of Computer Games/);
 });
 
-test("game script keeps a simple placeholder state structure", async () => {
-  const script = await readFile("game.js", "utf8");
+test("initial station matches the original starting resources", () => {
+  const station = cloneInitialStation();
 
-  assert.match(script, /mode: "initial"/);
-  assert.match(script, /"playing"/);
-  assert.match(script, /"placeholder-win"/);
-  assert.match(script, /window\.requestAnimationFrame\(gameLoop\)/);
+  assert.equal(station.bank, 10000);
+  assert.equal(station.land, 200);
+  assert.equal(station.sheep, 1000);
+  assert.equal(station.grain, 10000);
+  assert.equal(calculateStationValue(station), 50000);
 });
 
-test("static app validation passes without testing game mechanics", async () => {
+test("year resolution applies mortgage, flock, harvest, and market tables", () => {
+  const result = resolveYear(cloneInitialStation(), {
+    buyAcres: 0,
+    sellAcres: 0,
+    tradeSheep: 0,
+    tradeFor: "money",
+    grazingAcres: 100,
+    feedGrain: 9000,
+    sowAcres: 100,
+    sowGrainPerAcre: 10
+  });
+
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.station.year, 1);
+  assert.equal(result.station.bank, 9000);
+  assert.equal(result.report.born, 950);
+  assert.equal(result.report.died, 20);
+  assert.equal(result.report.grainHarvested, 10000);
+  assert.equal(result.station.grain, 10000);
+  assert.equal(result.station.landValue, 100);
+  assert.equal(result.station.grainValue, 0.1);
+});
+
+test("command validation recognizes original 666 and 999 entries", () => {
+  assert.equal(validateDecisions(cloneInitialStation(), { buyAcres: "666" }).command, "666");
+  assert.equal(validateDecisions(cloneInitialStation(), { buyAcres: "999" }).command, "999");
+});
+
+test("static app validation passes", async () => {
   await assert.doesNotReject(validateStaticApp());
 });

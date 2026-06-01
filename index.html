@@ -8,34 +8,114 @@
   </head>
   <body>
     <main class="app-shell" aria-labelledby="game-title">
-      <section class="hero-card">
-        <p class="eyebrow">Playable placeholder vertical slice</p>
+      <section class="hero-card terminal-card">
+        <p class="eyebrow">1980s BASIC management simulation</p>
         <h1 id="game-title">Sheep Station</h1>
         <p class="intro">
-          This tiny browser-game shell proves the app loop, input, and layout. The real Sheep Station gameplay implementation will come later.
+          Manage land, sheep, and grain through yearly decisions. Every season starts with a $1,000 mortgage payment, then your choices shape births, deaths, harvest, and market values.
         </p>
+        <p class="credit">
+          Based on “Sheep Station” from Tim Hartnell’s
+          <a href="https://colorcomputerarchive.com/repo/Documents/Books/Second%20Giant%20Book%20of%20Computer%20Games%20(Tim%20Hartnells).pdf">Second Giant Book of Computer Games</a>.
+        </p>
+      </section>
 
-        <section class="game-panel" aria-label="Playable placeholder game">
-          <div class="hud-row">
-            <p id="status-message" class="status-message" aria-live="polite">Loading placeholder app…</p>
-            <button id="restart-button" class="restart-button" type="button">Restart</button>
+      <section class="status-grid" aria-label="Current station resources">
+        <article class="stat-card"><span>Year</span><strong id="year-value">0</strong></article>
+        <article class="stat-card"><span>Bank</span><strong id="bank-value">$10,000</strong></article>
+        <article class="stat-card"><span>Land</span><strong id="land-value">200 acres</strong></article>
+        <article class="stat-card"><span>Sheep</span><strong id="sheep-value">1,000</strong></article>
+        <article class="stat-card"><span>Grain</span><strong id="grain-value">10,000 kg</strong></article>
+        <article class="stat-card"><span>Land value</span><strong id="land-price-value">$100/ac</strong></article>
+        <article class="stat-card"><span>Grain value</span><strong id="grain-price-value">$0.100/kg</strong></article>
+        <article class="stat-card station-total"><span>Station value</span><strong id="station-value">$50,000</strong></article>
+      </section>
+
+      <section class="game-layout">
+        <form id="decision-form" class="terminal-card decision-form" aria-describedby="validation-message">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Yearly orders</p>
+              <h2>Make this year’s decisions</h2>
+            </div>
+            <button id="restart-button" class="secondary-button" type="button">New game</button>
           </div>
 
-          <div id="playfield" class="playfield" tabindex="0" aria-label="Move the sheep token to the station marker">
-            <div class="scanlines" aria-hidden="true"></div>
-            <div id="goal" class="goal" aria-hidden="true">▣</div>
-            <div id="player" class="player" aria-hidden="true">🐑</div>
+          <p id="validation-message" class="validation-message" aria-live="polite"></p>
+
+          <div class="form-grid">
+            <label>
+              Acres to buy
+              <input name="buyAcres" type="number" inputmode="numeric" min="0" step="1" value="0" />
+            </label>
+            <label>
+              Acres to sell
+              <input name="sellAcres" type="number" inputmode="numeric" min="0" step="1" value="0" />
+            </label>
+            <label>
+              Sheep to trade
+              <input name="tradeSheep" type="number" inputmode="numeric" min="0" step="1" value="0" />
+            </label>
+            <label>
+              Trade sheep for
+              <select name="tradeFor">
+                <option value="money">Money</option>
+                <option value="grain">Grain</option>
+              </select>
+            </label>
+            <label>
+              Acres to graze
+              <input name="grazingAcres" type="number" inputmode="numeric" min="1" step="1" value="100" />
+            </label>
+            <label>
+              Grain to feed sheep (kg)
+              <input name="feedGrain" type="number" inputmode="numeric" min="1" step="1" value="10000" />
+            </label>
+            <label>
+              Acres to sow
+              <input name="sowAcres" type="number" inputmode="numeric" min="1" step="1" value="100" />
+            </label>
+            <label>
+              Grain sown per acre (kg)
+              <input name="sowGrainPerAcre" type="number" inputmode="numeric" min="1" max="15" step="1" value="10" />
+            </label>
           </div>
 
-          <p class="controls-hint">Move with Arrow keys or WASD. On touch screens, use the pad below.</p>
+          <label class="command-line">
+            BASIC command override
+            <input name="command" type="text" inputmode="numeric" autocomplete="off" placeholder="Type 666 for advice or 999 to quit" />
+          </label>
 
-          <div class="touch-controls" aria-label="Touch movement controls">
-            <button class="direction-button up" type="button" data-direction="up" aria-label="Move up">▲</button>
-            <button class="direction-button left" type="button" data-direction="left" aria-label="Move left">◀</button>
-            <button class="direction-button down" type="button" data-direction="down" aria-label="Move down">▼</button>
-            <button class="direction-button right" type="button" data-direction="right" aria-label="Move right">▶</button>
+          <div class="button-row">
+            <button class="primary-button" type="submit">Resolve year</button>
+            <button id="advice-button" class="secondary-button" type="button">Enter 666: advice</button>
+            <button id="quit-button" class="secondary-button danger" type="button">Enter 999: quit</button>
           </div>
-        </section>
+        </form>
+
+        <aside class="terminal-card report-panel" aria-live="polite">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Station printer</p>
+              <h2>Yearly report</h2>
+            </div>
+          </div>
+          <div id="report-output" class="report-output">
+            <p>Welcome to Sheep Station.</p>
+            <p>The best pattern is 10 sheep per grazed acre and 10 kilos of grain per sheep. Sow 10 kilos per acre for a 100 kilo harvest per acre.</p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="terminal-card how-to-play">
+        <h2>How to Play</h2>
+        <ul>
+          <li>Start with 1,000 sheep, 200 acres, $10,000 in the bank, and 10,000 kilos of grain. The station’s opening value is $50,000.</li>
+          <li>Each year, the bank first collects a $1,000 mortgage payment.</li>
+          <li>Then choose whether to buy or sell land, trade sheep for money or grain, graze land, feed sheep, and sow grain.</li>
+          <li>After resolving the year, the report shows sheep born and lost, grain harvested, market values, and total station value.</li>
+          <li>Use the 666 advice button or command field for original-style hints. Use 999 to end and value the property.</li>
+        </ul>
       </section>
     </main>
     <script type="module" src="./game.js"></script>

@@ -1,33 +1,43 @@
 # Sheep Station
 
-Sheep Station is a vanilla JavaScript browser adaptation of the Sheep Station game from *Second Giant Book of Computer Games* by Tim Hartnell.
+Sheep Station is a mobile-friendly vanilla JavaScript browser adaptation of “Sheep Station” from *Second Giant Book of Computer Games* by Tim Hartnell. The original BASIC game was written by Philip Coates and asks the player to manage a sheep station by balancing land, sheep, grain, yearly mortgage pressure, and changing market values.
 
-This repository currently contains a tiny playable browser-game vertical slice. It includes a retro-styled play area, a movable placeholder sheep token, keyboard and touch controls, a goal marker, a placeholder win state, and a restart button. This is not the final Sheep Station gameplay implementation; real Sheep Station rules and mechanics will come later.
+The project intentionally remains a simple static web artifact: root `index.html` loads root `styles.css`, `logic.js`, and `game.js` with relative paths, and no framework or build step is required to play.
 
 ## Source credit
 
-The original game appears in *Second Giant Book of Computer Games* by Tim Hartnell. A scanned copy is available from the Color Computer Archive:
+Based on “Sheep Station” from Tim Hartnell’s *Second Giant Book of Computer Games*. A scanned copy is available from the Color Computer Archive:
 
 <https://colorcomputerarchive.com/repo/Documents/Books/Second%20Giant%20Book%20of%20Computer%20Games%20(Tim%20Hartnells).pdf>
 
-## Requirements
+The repository-local source PDF is kept at `docs/source/SecondGiantBookOfComputerGames.pdf` for reference and must not be rewritten or removed.
 
-- Node.js LTS
-- npm
+## Play locally
 
-## Setup
-
-```sh
-npm install
-```
-
-## Run locally
+Open `index.html` directly in a browser, or run the lightweight local static server:
 
 ```sh
 npm run start
 ```
 
-The included lightweight Node.js server prints a local development URL that can be opened in a browser.
+The server prints a local development URL that can be opened in a browser.
+
+## Gameplay overview
+
+- You begin with 1,000 sheep, 200 acres, $10,000 in the bank, and 10,000 kilos of grain.
+- The station’s starting value is $50,000.
+- Each year begins with an automatic $1,000 mortgage payment to the bank.
+- You then choose whether to buy or sell land, whether to trade sheep for money or grain, how many acres to graze, how much grain to feed the flock, how many acres to sow, and how much grain to sow per acre.
+- The yearly report shows sheep born, sheep deaths, grain harvested, land value, grain value, and total station value.
+- Enter `666` in the command field or use the advice button for original-style management advice.
+- Enter `999` in the command field or use the quit button to end the run and value the station.
+
+## Implementation notes
+
+- The browser version preserves the original management loop, starting resources, yearly mortgage, market tables, sheep birth/death table behavior, advice command, and quit command.
+- The UI presents the yearly BASIC prompts as a mobile-first form with validation, resource cards, and a report panel instead of requiring only raw typed input.
+- Logic is split into `logic.js` so the simulation rules can be checked independently from DOM rendering in `game.js`.
+- The original book prose and BASIC listing are not copied into the interface; copy and layout are original for this adaptation.
 
 ## GitHub Pages
 
@@ -39,18 +49,11 @@ In the GitHub repository settings, configure **Pages** with:
 - **Branch:** `main`
 - **Folder:** `/root`
 
-With that branch-based Pages setup, the playable placeholder site is served from the root `index.html` and its relative `styles.css` and `game.js` references. GitHub Pages does not need to run Vite or any custom build step to publish the site.
+With that branch-based Pages setup, the playable site is served from the root `index.html` and its relative static asset references. GitHub Pages does not need to run Vite or any custom build step to publish the site.
 
 When GitHub Pages is enabled for this repository, the site will be available at:
 
 <https://YOUR_GITHUB_USERNAME.github.io/sheep-station/>
-
-## Placeholder controls
-
-- Move the placeholder sheep with Arrow keys or WASD.
-- Use the on-screen direction buttons on touch devices.
-- Reach the station marker to trigger the placeholder win message.
-- Use **Restart** to reset the placeholder state.
 
 ## Validate changes
 
@@ -63,11 +66,5 @@ npm run build
 
 - `npm ci` installs from the committed lockfile. `npm install` is also acceptable when intentionally refreshing the lockfile.
 - `npm run lint` runs dependency-free JavaScript syntax and formatting checks.
-- `npm run test` runs lightweight smoke tests for the placeholder static app wiring and expected mini-game markup.
+- `npm run test` runs lightweight smoke tests and deterministic simulation checks.
 - `npm run build` validates the static app and writes the generated site to `dist/`.
-
-These checks keep the placeholder vertical slice healthy while the project remains a simple vanilla JavaScript browser game. They do not test or claim to test final Sheep Station gameplay mechanics.
-
-## Intended next step
-
-The next implementation pass should adapt Sheep Station from pages 368–377 of *Second Giant Book of Computer Games* for the browser. Preserve the gameplay rules and spirit, but use original JavaScript, original UI copy, and original assets/presentation. Credit the book and source link; do not copy the book text, code, tables, or prose verbatim.

@@ -1,243 +1,198 @@
-const playfield = document.querySelector("#playfield");
-const playerToken = document.querySelector("#player");
-const stationMarker = document.querySelector("#goal");
-const statusMessage = document.querySelector("#status-message");
+import {
+  STARTING_STATION_VALUE,
+  adviceText,
+  calculateAdvicePlan,
+  calculateStationValue,
+  cloneInitialStation,
+  resolveYear
+} from "./logic.js";
+
+const form = document.querySelector("#decision-form");
+const validationMessage = document.querySelector("#validation-message");
+const reportOutput = document.querySelector("#report-output");
 const restartButton = document.querySelector("#restart-button");
-const directionButtons = document.querySelectorAll("[data-direction]");
+const adviceButton = document.querySelector("#advice-button");
+const quitButton = document.querySelector("#quit-button");
 
-const initialPlayerPosition = {
-  x: 24,
-  y: 24
+const resourceElements = {
+  year: document.querySelector("#year-value"),
+  bank: document.querySelector("#bank-value"),
+  land: document.querySelector("#land-value"),
+  sheep: document.querySelector("#sheep-value"),
+  grain: document.querySelector("#grain-value"),
+  landValue: document.querySelector("#land-price-value"),
+  grainValue: document.querySelector("#grain-price-value"),
+  stationValue: document.querySelector("#station-value")
 };
 
-const placeholderState = {
-  mode: "initial",
-  activeDirections: new Set(),
-  lastFrameTime: 0,
-  player: {
-    ...initialPlayerPosition,
-    size: 32,
-    speed: 180
-  },
-  goal: {
-    x: 0,
-    y: 0,
-    size: 40
+let station = cloneInitialStation();
+
+function readDecisions() {
+  const data = new FormData(form);
+  const command = data.get("command")?.trim();
+
+  if (command === "666" || command === "999") {
+    return { command };
   }
-};
-
-const keyDirections = new Map([
-  ["ArrowUp", "up"],
-  ["KeyW", "up"],
-  ["ArrowDown", "down"],
-  ["KeyS", "down"],
-  ["ArrowLeft", "left"],
-  ["KeyA", "left"],
-  ["ArrowRight", "right"],
-  ["KeyD", "right"]
-]);
-
-function getPlayfieldSize() {
-  const bounds = playfield.getBoundingClientRect();
 
   return {
-    width: bounds.width,
-    height: bounds.height
+    buyAcres: data.get("buyAcres"),
+    sellAcres: data.get("sellAcres"),
+    tradeSheep: data.get("tradeSheep"),
+    tradeFor: data.get("tradeFor"),
+    grazingAcres: data.get("grazingAcres"),
+    feedGrain: data.get("feedGrain"),
+    sowAcres: data.get("sowAcres"),
+    sowGrainPerAcre: data.get("sowGrainPerAcre")
   };
 }
 
-function clamp(value, minimum, maximum) {
-  return Math.min(Math.max(value, minimum), maximum);
+function renderResources() {
+  resourceElements.year.textContent = String(station.year);
+  resourceElements.bank.textContent = formatMoney(station.bank);
+  resourceElements.land.textContent = `${formatNumber(station.land)} acres`;
+  resourceElements.sheep.textContent = formatNumber(station.sheep);
+  resourceElements.grain.textContent = `${formatNumber(station.grain)} kg`;
+  resourceElements.landValue.textContent = `${formatMoney(station.landValue)}/ac`;
+  resourceElements.grainValue.textContent = `${formatMoney(station.grainValue, 3)}/kg`;
+  resourceElements.stationValue.textContent = formatMoney(calculateStationValue(station));
 }
 
-function setStatus(text) {
-  statusMessage.textContent = text;
-}
+function renderReport(report) {
+  reportOutput.innerHTML = "";
 
-function placeGoalNearFarCorner() {
-  const bounds = getPlayfieldSize();
-
-  placeholderState.goal.x = Math.max(16, bounds.width - placeholderState.goal.size - 24);
-  placeholderState.goal.y = Math.max(16, bounds.height - placeholderState.goal.size - 24);
-}
-
-function renderPlaceholder() {
-  playerToken.style.inlineSize = `${placeholderState.player.size}px`;
-  playerToken.style.blockSize = `${placeholderState.player.size}px`;
-  playerToken.style.transform = `translate(${placeholderState.player.x}px, ${placeholderState.player.y}px)`;
-
-  stationMarker.style.inlineSize = `${placeholderState.goal.size}px`;
-  stationMarker.style.blockSize = `${placeholderState.goal.size}px`;
-  stationMarker.style.transform = `translate(${placeholderState.goal.x}px, ${placeholderState.goal.y}px)`;
-
-  playfield.dataset.state = placeholderState.mode;
-}
-
-function resetPlaceholder() {
-  placeholderState.mode = "initial";
-  placeholderState.activeDirections.clear();
-  placeholderState.lastFrameTime = 0;
-  placeholderState.player.x = initialPlayerPosition.x;
-  placeholderState.player.y = initialPlayerPosition.y;
-  placeGoalNearFarCorner();
-  setStatus("Guide the placeholder sheep to the station marker.");
-  renderPlaceholder();
-  playfield.focus({ preventScroll: true });
-}
-
-function hasReachedGoal() {
-  return (
-    placeholderState.player.x < placeholderState.goal.x + placeholderState.goal.size &&
-    placeholderState.player.x + placeholderState.player.size > placeholderState.goal.x &&
-    placeholderState.player.y < placeholderState.goal.y + placeholderState.goal.size &&
-    placeholderState.player.y + placeholderState.player.size > placeholderState.goal.y
-  );
-}
-
-function getMovementVector() {
-  let horizontal = 0;
-  let vertical = 0;
-
-  if (placeholderState.activeDirections.has("left")) {
-    horizontal -= 1;
-  }
-
-  if (placeholderState.activeDirections.has("right")) {
-    horizontal += 1;
-  }
-
-  if (placeholderState.activeDirections.has("up")) {
-    vertical -= 1;
-  }
-
-  if (placeholderState.activeDirections.has("down")) {
-    vertical += 1;
-  }
-
-  if (horizontal !== 0 && vertical !== 0) {
-    horizontal *= Math.SQRT1_2;
-    vertical *= Math.SQRT1_2;
-  }
-
-  return { horizontal, vertical };
-}
-
-function updatePlaceholder(deltaSeconds) {
-  if (placeholderState.activeDirections.size === 0 || placeholderState.mode === "placeholder-win") {
+  if (!report) {
+    appendReportLine("Welcome to Sheep Station.");
+    appendReportLine("The station was worth $50,000 before you became manager.");
+    appendReportLine("Use the yearly orders to begin, or enter 666 for advice.");
     return;
   }
 
-  if (placeholderState.mode === "initial") {
-    placeholderState.mode = "playing";
-    setStatus("Playing placeholder slice. Reach the station marker!");
-  }
+  appendReportLine(`Year ${report.year} report`);
+  appendReportLine(`Mortgage paid: ${formatMoney(report.mortgage)}.`);
+  appendReportLine(`Sheep born: ${formatNumber(report.born)}. Sheep died: ${formatNumber(report.died)}.`);
+  appendReportLine(`Grain harvested: ${formatNumber(report.grainHarvested)} kg (${formatNumber(report.grainHarvestedPerAcre)} kg per acre sown).`);
+  appendReportLine(`Land is now ${formatMoney(report.landValue)} per acre; grain is ${formatMoney(report.grainValue, 3)} per kilo.`);
+  appendReportLine(`Station value: ${formatMoney(report.stationValue)}.`);
 
-  const { horizontal, vertical } = getMovementVector();
-  const bounds = getPlayfieldSize();
-  const distance = placeholderState.player.speed * deltaSeconds;
-
-  placeholderState.player.x = clamp(
-    placeholderState.player.x + horizontal * distance,
-    0,
-    bounds.width - placeholderState.player.size
-  );
-  placeholderState.player.y = clamp(
-    placeholderState.player.y + vertical * distance,
-    0,
-    bounds.height - placeholderState.player.size
-  );
-
-  if (hasReachedGoal()) {
-    placeholderState.mode = "placeholder-win";
-    placeholderState.activeDirections.clear();
-    setStatus("Goal reached — placeholder win!");
+  if (report.flockRatio < 8) {
+    appendReportLine("The flock looked thin this year. More grazing room or feed may help.", "warning-line");
+  } else if (report.flockRatio > 10) {
+    appendReportLine("The flock thrived on generous feed and pasture.", "success-line");
   }
 }
 
-function gameLoop(timestamp) {
-  if (placeholderState.lastFrameTime === 0) {
-    placeholderState.lastFrameTime = timestamp;
+function appendReportLine(text, className = "") {
+  const paragraph = document.createElement("p");
+  paragraph.textContent = text;
+  if (className) {
+    paragraph.className = className;
   }
-
-  const deltaSeconds = Math.min((timestamp - placeholderState.lastFrameTime) / 1000, 0.05);
-  placeholderState.lastFrameTime = timestamp;
-
-  updatePlaceholder(deltaSeconds);
-  renderPlaceholder();
-  window.requestAnimationFrame(gameLoop);
+  reportOutput.append(paragraph);
 }
 
-function setDirection(direction, isPressed) {
-  if (isPressed) {
-    placeholderState.activeDirections.add(direction);
-    playfield.focus({ preventScroll: true });
-  } else {
-    placeholderState.activeDirections.delete(direction);
-  }
+function showValidation(messages) {
+  validationMessage.textContent = messages.join(" ");
+  validationMessage.classList.toggle("is-visible", messages.length > 0);
 }
 
-function handleKeyDown(event) {
-  const direction = keyDirections.get(event.code);
-
-  if (!direction) {
-    return;
-  }
-
-  event.preventDefault();
-  setDirection(direction, true);
+function showAdvice() {
+  const plan = calculateAdvicePlan(station);
+  reportOutput.innerHTML = "";
+  appendReportLine("666 ADVICE");
+  adviceText.forEach((line) => appendReportLine(line));
+  appendReportLine(`For your current station, try about ${formatNumber(plan.grazingAcres)} grazing acres, ${formatNumber(plan.feedGrain)} kg of feed, ${formatNumber(plan.sowAcres)} sowing acres, and 10 kg sown per acre.`);
+  showValidation([]);
 }
 
-function handleKeyUp(event) {
-  const direction = keyDirections.get(event.code);
-
-  if (!direction) {
-    return;
-  }
-
-  event.preventDefault();
-  setDirection(direction, false);
-}
-
-function bindTouchControls() {
-  directionButtons.forEach((button) => {
-    const direction = button.dataset.direction;
-
-    button.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
-      button.setPointerCapture(event.pointerId);
-      setDirection(direction, true);
-    });
-
-    button.addEventListener("pointerup", () => {
-      setDirection(direction, false);
-    });
-
-    button.addEventListener("pointercancel", () => {
-      setDirection(direction, false);
-    });
-
-    button.addEventListener("lostpointercapture", () => {
-      setDirection(direction, false);
-    });
+function quitGame() {
+  station.ended = true;
+  form.querySelectorAll("input, select, button[type='submit']").forEach((control) => {
+    control.disabled = true;
   });
+  reportOutput.innerHTML = "";
+  appendReportLine(`This sheep station was worth ${formatMoney(STARTING_STATION_VALUE)} before you became the manager.`);
+  appendReportLine(`It is now worth ${formatMoney(calculateStationValue(station))} after ${formatNumber(station.year)} years.`);
+  appendReportLine("Press New game to manage another station.");
+  showValidation([]);
 }
 
-function keepPiecesWithinPlayfield() {
-  const bounds = getPlayfieldSize();
-
-  placeGoalNearFarCorner();
-  placeholderState.player.x = clamp(placeholderState.player.x, 0, bounds.width - placeholderState.player.size);
-  placeholderState.player.y = clamp(placeholderState.player.y, 0, bounds.height - placeholderState.player.size);
-  renderPlaceholder();
+function restartGame() {
+  station = cloneInitialStation();
+  form.reset();
+  form.querySelectorAll("input, select, button[type='submit']").forEach((control) => {
+    control.disabled = false;
+  });
+  setRecommendedInputs();
+  renderResources();
+  renderReport(null);
+  showValidation([]);
 }
 
-if (playfield && playerToken && stationMarker && statusMessage && restartButton) {
-  window.addEventListener("keydown", handleKeyDown);
-  window.addEventListener("keyup", handleKeyUp);
-  window.addEventListener("blur", () => placeholderState.activeDirections.clear());
-  window.addEventListener("resize", keepPiecesWithinPlayfield);
-  restartButton.addEventListener("click", resetPlaceholder);
-  bindTouchControls();
-  resetPlaceholder();
-  window.requestAnimationFrame(gameLoop);
+function setRecommendedInputs() {
+  const plan = calculateAdvicePlan(station);
+  form.elements.grazingAcres.value = plan.grazingAcres;
+  form.elements.feedGrain.value = plan.feedGrain;
+  form.elements.sowAcres.value = plan.sowAcres;
+  form.elements.sowGrainPerAcre.value = plan.sowGrainPerAcre;
+  form.elements.buyAcres.value = 0;
+  form.elements.sellAcres.value = 0;
+  form.elements.tradeSheep.value = 0;
+  form.elements.command.value = "";
 }
+
+function handleSubmit(event) {
+  event.preventDefault();
+
+  if (station.ended) {
+    return;
+  }
+
+  const decisions = readDecisions();
+
+  if (decisions.command === "666") {
+    showAdvice();
+    form.elements.command.value = "";
+    return;
+  }
+
+  if (decisions.command === "999") {
+    quitGame();
+    return;
+  }
+
+  const result = resolveYear(station, decisions);
+
+  if (result.errors.length > 0) {
+    showValidation(result.errors);
+    return;
+  }
+
+  station = result.station;
+  renderResources();
+  renderReport(result.report);
+  setRecommendedInputs();
+  showValidation([]);
+}
+
+function formatMoney(value, maximumFractionDigits = 0) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits,
+    minimumFractionDigits: maximumFractionDigits === 0 ? 0 : maximumFractionDigits
+  }).format(value);
+}
+
+function formatNumber(value) {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 0
+  }).format(value);
+}
+
+form.addEventListener("submit", handleSubmit);
+adviceButton.addEventListener("click", showAdvice);
+quitButton.addEventListener("click", quitGame);
+restartButton.addEventListener("click", restartGame);
+
+restartGame();
