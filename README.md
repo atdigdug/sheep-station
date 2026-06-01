@@ -55,13 +55,19 @@ When GitHub Pages is enabled for this repository, the site will be available at:
 ## Validate changes
 
 ```sh
+npm ci
 npm run lint
 npm run test
 npm run build
 ```
 
+- `npm ci` installs from the committed lockfile. `npm install` is also acceptable when intentionally refreshing the lockfile.
 - `npm run lint` runs dependency-free JavaScript syntax and formatting checks.
 - `npm run test` runs lightweight smoke tests for the placeholder static app wiring and expected mini-game markup.
 - `npm run build` validates the static app and writes the generated site to `dist/`.
 
 These checks keep the placeholder vertical slice healthy while the project remains a simple vanilla JavaScript browser game. They do not test or claim to test final Sheep Station gameplay mechanics.
+
+## Intended next step
+
+The next implementation pass should adapt Sheep Station from pages 368–377 of *Second Giant Book of Computer Games* for the browser. Preserve the gameplay rules and spirit, but use original JavaScript, original UI copy, and original assets/presentation. Credit the book and source link; do not copy the book text, code, tables, or prose verbatim.
