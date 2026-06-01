@@ -1,261 +1,319 @@
 :root {
   color-scheme: dark;
-  --bg: #111827;
-  --panel: #1f2937;
-  --panel-light: #374151;
-  --screen: #020617;
-  --text: #fef3c7;
-  --muted: #cbd5e1;
-  --accent: #f59e0b;
-  --accent-dark: #92400e;
-  --green: #86efac;
-  --green-dark: #166534;
-  --danger: #fca5a5;
+  --bg: #07110d;
+  --screen: #0c1f17;
+  --panel: #10281d;
+  --panel-light: #1f4f36;
+  --text: #ecfdf5;
+  --muted: #a7f3d0;
+  --green: #6ee7b7;
+  --green-dark: #047857;
+  --amber: #fbbf24;
+  --amber-dark: #92400e;
+  --danger: #f87171;
+  font-family: "Courier New", Courier, monospace;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html {
-  min-width: 0;
-}
-
 body {
+  min-width: 320px;
   margin: 0;
-  min-width: 0;
-  min-height: 100vh;
-  overflow-x: hidden;
-  font-family: "Courier New", Courier, monospace;
   color: var(--text);
   background:
-    radial-gradient(circle at top, rgba(245, 158, 11, 0.18), transparent 32rem),
-    linear-gradient(135deg, rgba(22, 101, 52, 0.22), transparent 40%),
-    var(--bg);
+    radial-gradient(circle at top left, rgba(110, 231, 183, 0.12), transparent 22rem),
+    linear-gradient(135deg, #030712, var(--bg));
 }
 
-button {
+a {
+  color: var(--amber);
+}
+
+button,
+input,
+select {
   font: inherit;
 }
 
 .app-shell {
   display: grid;
-  min-height: 100vh;
-  place-items: center;
-  padding: clamp(1rem, 4vw, 2rem);
-}
-
-.hero-card {
-  width: min(100%, 44rem);
-  padding: clamp(1rem, 4vw, 2rem);
-  text-align: center;
-  background: var(--panel);
-  border: 4px solid var(--accent);
-  box-shadow: 0.75rem 0.75rem 0 var(--accent-dark);
-}
-
-.eyebrow {
-  margin: 0 0 0.75rem;
-  color: var(--green);
-  font-size: 0.85rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-h1 {
-  margin: 0;
-  font-size: clamp(2.5rem, 9vw, 5rem);
-  line-height: 1;
-  text-shadow: 0.18rem 0.18rem 0 var(--accent-dark);
-}
-
-.intro,
-.status-message,
-.controls-hint {
-  color: var(--muted);
-}
-
-.intro {
-  margin: 1rem auto 1.5rem;
-  max-width: 34rem;
-}
-
-.game-panel {
-  display: grid;
   gap: 1rem;
+  width: min(100%, 74rem);
   margin: 0 auto;
-  max-width: 34rem;
+  padding: 1rem;
 }
 
-.hud-row {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem;
-  background: #111827;
-  border: 2px solid var(--panel-light);
-}
-
-.status-message {
-  margin: 0;
-  text-align: left;
-  overflow-wrap: anywhere;
-  font-size: 0.95rem;
-}
-
-.restart-button,
-.direction-button {
-  color: var(--text);
-  background: var(--accent-dark);
-  border: 2px solid var(--accent);
-  box-shadow: 0.22rem 0.22rem 0 #451a03;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.restart-button:hover,
-.restart-button:focus-visible,
-.direction-button:hover,
-.direction-button:focus-visible {
-  background: #b45309;
-  outline: 2px solid var(--green);
-  outline-offset: 2px;
-}
-
-.restart-button:active,
-.direction-button:active {
-  transform: translate(0.12rem, 0.12rem);
-  box-shadow: 0.1rem 0.1rem 0 #451a03;
-}
-
-.restart-button {
-  flex: 0 0 auto;
-  padding: 0.55rem 0.75rem;
-}
-
-.playfield {
+.terminal-card,
+.stat-card {
   position: relative;
   overflow: hidden;
-  width: min(100%, 34rem);
-  aspect-ratio: 16 / 10;
-  min-height: 14rem;
-  touch-action: none;
-  background:
-    linear-gradient(rgba(134, 239, 172, 0.08) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(134, 239, 172, 0.08) 2px, transparent 2px),
-    var(--screen);
-  background-size: 2.5rem 2.5rem;
-  border: 4px solid var(--panel-light);
-  box-shadow: inset 0 0 0 2px #000;
+  background: rgba(16, 40, 29, 0.96);
+  border: 2px solid var(--panel-light);
+  box-shadow: 0.35rem 0.35rem 0 #020617, inset 0 0 0 1px #000;
 }
 
-.playfield:focus-visible {
-  outline: 3px solid var(--green);
-  outline-offset: 3px;
-}
-
-.player,
-.goal {
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  display: grid;
-  place-items: center;
-  user-select: none;
-  will-change: transform;
-}
-
-.player {
-  z-index: 2;
-  font-size: 1.35rem;
-  background: #fef3c7;
-  border: 3px solid var(--green);
-  box-shadow: 0.25rem 0.25rem 0 var(--green-dark);
-}
-
-.goal {
-  color: var(--accent);
-  font-size: 1.65rem;
-  background: rgba(245, 158, 11, 0.12);
-  border: 3px dashed var(--accent);
-}
-
-.playfield[data-state="placeholder-win"] .goal {
-  color: var(--green);
-  border-color: var(--green);
-}
-
-.scanlines {
+.terminal-card::after {
   position: absolute;
   inset: 0;
-  z-index: 3;
   pointer-events: none;
+  content: "";
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0.04) 1px,
+    rgba(255, 255, 255, 0.045),
+    rgba(255, 255, 255, 0.045) 1px,
     transparent 1px,
     transparent 5px
   );
 }
 
-.controls-hint {
-  margin: 0;
-  font-size: 0.9rem;
+.hero-card,
+.decision-form,
+.report-panel,
+.how-to-play {
+  padding: 1rem;
 }
 
-.touch-controls {
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--green);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-block-start: 0;
+}
+
+h1 {
+  margin-block-end: 0.75rem;
+  color: var(--amber);
+  font-size: clamp(2rem, 12vw, 4.75rem);
+  line-height: 0.95;
+  text-shadow: 0.18rem 0.18rem 0 #000;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin-block-end: 0.75rem;
+  color: var(--amber);
+  font-size: clamp(1.15rem, 4vw, 1.65rem);
+}
+
+.intro,
+.credit,
+.how-to-play li,
+.report-output p {
+  line-height: 1.55;
+}
+
+.credit {
+  margin-block-end: 0;
+  color: var(--muted);
+}
+
+.status-grid {
   display: grid;
-  grid-template-areas:
-    ". up ."
-    "left down right";
-  grid-template-columns: repeat(3, minmax(3.75rem, 1fr));
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-  width: min(100%, 16rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
 }
 
-.direction-button {
-  min-height: 3.75rem;
+.stat-card {
+  display: grid;
+  gap: 0.2rem;
+  min-height: 5.25rem;
   padding: 0.75rem;
-  font-size: 1.3rem;
 }
 
-.up {
-  grid-area: up;
+.stat-card span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
 }
 
-.left {
-  grid-area: left;
+.stat-card strong {
+  align-self: end;
+  color: var(--text);
+  font-size: clamp(1.1rem, 6vw, 1.55rem);
+  overflow-wrap: anywhere;
 }
 
-.down {
-  grid-area: down;
+.station-total {
+  grid-column: 1 / -1;
+  border-color: var(--amber);
 }
 
-.right {
-  grid-area: right;
+.game-layout {
+  display: grid;
+  gap: 1rem;
 }
 
-@media (max-width: 34rem) {
-  .hero-card {
-    border-width: 3px;
-    box-shadow: 0.4rem 0.4rem 0 var(--accent-dark);
+.panel-heading {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-block-end: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+input,
+select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.65rem;
+  color: var(--text);
+  background: #06150f;
+  border: 2px solid var(--panel-light);
+  border-radius: 0;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.command-line {
+  margin-block-start: 0.8rem;
+}
+
+.validation-message {
+  display: none;
+  padding: 0.75rem;
+  color: #fee2e2;
+  background: rgba(127, 29, 29, 0.45);
+  border: 2px solid var(--danger);
+}
+
+.validation-message.is-visible {
+  display: block;
+}
+
+.button-row {
+  display: grid;
+  gap: 0.65rem;
+  margin-block-start: 1rem;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 3rem;
+  padding: 0.65rem 0.9rem;
+  color: var(--text);
+  background: var(--green-dark);
+  border: 2px solid var(--green);
+  box-shadow: 0.2rem 0.2rem 0 #022c22;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.secondary-button {
+  background: var(--amber-dark);
+  border-color: var(--amber);
+  box-shadow: 0.2rem 0.2rem 0 #451a03;
+}
+
+.secondary-button.danger {
+  background: #7f1d1d;
+  border-color: var(--danger);
+}
+
+.primary-button:hover,
+.primary-button:focus-visible,
+.secondary-button:hover,
+.secondary-button:focus-visible {
+  filter: brightness(1.15);
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.primary-button:active,
+.secondary-button:active {
+  transform: translate(0.12rem, 0.12rem);
+  box-shadow: 0.08rem 0.08rem 0 #000;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.report-output {
+  min-height: 19rem;
+  padding: 0.9rem;
+  color: var(--green);
+  background: #03100b;
+  border: 2px solid #000;
+}
+
+.report-output p {
+  margin-block-end: 0.85rem;
+}
+
+.warning-line {
+  color: var(--amber);
+}
+
+.success-line {
+  color: var(--muted);
+}
+
+.how-to-play ul {
+  margin: 0;
+  padding-inline-start: 1.2rem;
+}
+
+.how-to-play li + li {
+  margin-block-start: 0.5rem;
+}
+
+@media (min-width: 42rem) {
+  .app-shell {
+    padding: 1.5rem;
   }
 
-  .hud-row {
-    align-items: stretch;
-    flex-direction: column;
+  .status-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .status-message {
-    text-align: center;
+  .station-total {
+    grid-column: auto;
   }
 
-  .playfield {
-    min-height: 12rem;
+  .form-grid,
+  .button-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 58rem) {
+  .game-layout {
+    grid-template-columns: minmax(0, 1.25fr) minmax(19rem, 0.75fr);
+    align-items: start;
+  }
+
+  .hero-card,
+  .decision-form,
+  .report-panel,
+  .how-to-play {
+    padding: 1.25rem;
   }
 }
