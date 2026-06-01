@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sheep Station</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-labelledby="game-title">
+      <section class="hero-card">
+        <p class="eyebrow">Retro browser game skeleton</p>
+        <h1 id="game-title">Sheep Station</h1>
+        <p class="intro">
+          The real Sheep Station gameplay implementation will come later.
+        </p>
+
+        <div class="game-area" role="img" aria-label="Placeholder game area with sheep and station markers">
+          <div class="scanlines" aria-hidden="true"></div>
+          <div class="game-grid" aria-hidden="true">
+            <span class="tile">🐑</span>
+            <span class="tile">·</span>
+            <span class="tile station">▣</span>
+            <span class="tile">·</span>
+            <span class="tile">░</span>
+            <span class="tile">·</span>
+            <span class="tile">·</span>
+            <span class="tile">🐑</span>
+            <span class="tile">░</span>
+          </div>
+        </div>
+
+        <p id="status-message" class="status-message">Loading placeholder app…</p>
+      </section>
+    </main>
+    <script type="module" src="/game.js"></script>
+  </body>
+</html>
