@@ -9,28 +9,33 @@
   <body>
     <main class="app-shell" aria-labelledby="game-title">
       <section class="hero-card">
-        <p class="eyebrow">Retro browser game skeleton</p>
+        <p class="eyebrow">Playable placeholder vertical slice</p>
         <h1 id="game-title">Sheep Station</h1>
         <p class="intro">
-          The real Sheep Station gameplay implementation will come later.
+          This tiny browser-game shell proves the app loop, input, and layout. The real Sheep Station gameplay implementation will come later.
         </p>
 
-        <div class="game-area" role="img" aria-label="Placeholder game area with sheep and station markers">
-          <div class="scanlines" aria-hidden="true"></div>
-          <div class="game-grid" aria-hidden="true">
-            <span class="tile">🐑</span>
-            <span class="tile">·</span>
-            <span class="tile station">▣</span>
-            <span class="tile">·</span>
-            <span class="tile">░</span>
-            <span class="tile">·</span>
-            <span class="tile">·</span>
-            <span class="tile">🐑</span>
-            <span class="tile">░</span>
+        <section class="game-panel" aria-label="Playable placeholder game">
+          <div class="hud-row">
+            <p id="status-message" class="status-message" aria-live="polite">Loading placeholder app…</p>
+            <button id="restart-button" class="restart-button" type="button">Restart</button>
           </div>
-        </div>
 
-        <p id="status-message" class="status-message">Loading placeholder app…</p>
+          <div id="playfield" class="playfield" tabindex="0" aria-label="Move the sheep token to the station marker">
+            <div class="scanlines" aria-hidden="true"></div>
+            <div id="goal" class="goal" aria-hidden="true">▣</div>
+            <div id="player" class="player" aria-hidden="true">🐑</div>
+          </div>
+
+          <p class="controls-hint">Move with Arrow keys or WASD. On touch screens, use the pad below.</p>
+
+          <div class="touch-controls" aria-label="Touch movement controls">
+            <button class="direction-button up" type="button" data-direction="up" aria-label="Move up">▲</button>
+            <button class="direction-button left" type="button" data-direction="left" aria-label="Move left">◀</button>
+            <button class="direction-button down" type="button" data-direction="down" aria-label="Move down">▼</button>
+            <button class="direction-button right" type="button" data-direction="right" aria-label="Move right">▶</button>
+          </div>
+        </section>
       </section>
     </main>
     <script type="module" src="/game.js"></script>
