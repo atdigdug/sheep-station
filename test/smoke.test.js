@@ -2,21 +2,24 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-const requiredFiles = ["index.html", "styles.css", "game.js"];
+import { requiredStaticFiles, validateStaticApp } from "../scripts/validate.js";
 
-test("placeholder app files exist", async () => {
+test("placeholder app files exist and are non-empty", async () => {
   await Promise.all(
-    requiredFiles.map(async (file) => {
+    requiredStaticFiles.map(async (file) => {
       const contents = await readFile(file, "utf8");
       assert.ok(contents.length > 0, `${file} should not be empty`);
     })
   );
 });
 
-test("index page identifies the placeholder game", async () => {
+test("index page references the expected static assets", async () => {
   const html = await readFile("index.html", "utf8");
 
-  assert.match(html, /<h1[^>]*>Sheep Station<\/h1>/);
-  assert.match(html, /game\.js/);
-  assert.match(html, /styles\.css/);
+  assert.match(html, /<link rel="stylesheet" href="\/styles\.css" \/>/);
+  assert.match(html, /<script type="module" src="\/game\.js"><\/script>/);
+});
+
+test("static app validation passes without testing game mechanics", async () => {
+  await assert.doesNotReject(validateStaticApp());
 });

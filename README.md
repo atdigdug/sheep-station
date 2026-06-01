@@ -15,7 +15,7 @@ The original game appears in *Second Giant Book of Computer Games* by Tim Hartne
 - Node.js LTS
 - npm
 
-## Install dependencies
+## Setup
 
 ```sh
 npm install
@@ -27,9 +27,9 @@ npm install
 npm run start
 ```
 
-The included lightweight Node.js server will print a local development URL that can be opened in a browser.
+The included lightweight Node.js server prints a local development URL that can be opened in a browser.
 
-## Run checks
+## Validate changes
 
 ```sh
 npm run lint
@@ -37,4 +37,8 @@ npm run test
 npm run build
 ```
 
-These checks keep the placeholder static app healthy while the project remains a simple vanilla JavaScript browser game.
+- `npm run lint` runs dependency-free JavaScript syntax and formatting checks.
+- `npm run test` runs lightweight smoke tests for the placeholder static app wiring.
+- `npm run build` validates the static app and writes the generated site to `dist/`.
+
+These checks keep the placeholder app healthy while the project remains a simple vanilla JavaScript browser game.
