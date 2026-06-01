@@ -16,8 +16,8 @@ test("placeholder app files exist and are non-empty", async () => {
 test("index page references the expected static assets", async () => {
   const html = await readFile("index.html", "utf8");
 
-  assert.match(html, /<link rel="stylesheet" href="\/styles\.css" \/>/);
-  assert.match(html, /<script type="module" src="\/game\.js"><\/script>/);
+  assert.match(html, /<link rel="stylesheet" href="\.\/styles\.css" \/>/);
+  assert.match(html, /<script type="module" src="\.\/game\.js"><\/script>/);
 });
 
 test("index page exposes the placeholder mini-game controls", async () => {

@@ -29,6 +29,12 @@ npm run start
 
 The included lightweight Node.js server prints a local development URL that can be opened in a browser.
 
+## GitHub Pages
+
+When GitHub Pages is enabled for this repository, the deployed site will be available at:
+
+<https://YOUR_GITHUB_USERNAME.github.io/sheep-station/>
+
 ## Placeholder controls
 
 - Move the placeholder sheep with Arrow keys or WASD.
