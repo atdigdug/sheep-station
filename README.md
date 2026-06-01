@@ -2,7 +2,7 @@
 
 Sheep Station is a vanilla JavaScript browser adaptation of the Sheep Station game from *Second Giant Book of Computer Games* by Tim Hartnell.
 
-This repository currently contains only a small static-web skeleton and placeholder app. The real Sheep Station gameplay implementation is not part of this initial skeleton task and will come later.
+This repository currently contains a tiny playable browser-game vertical slice. It includes a retro-styled play area, a movable placeholder sheep token, keyboard and touch controls, a goal marker, a placeholder win state, and a restart button. This is not the final Sheep Station gameplay implementation; real Sheep Station rules and mechanics will come later.
 
 ## Source credit
 
@@ -29,6 +29,13 @@ npm run start
 
 The included lightweight Node.js server prints a local development URL that can be opened in a browser.
 
+## Placeholder controls
+
+- Move the placeholder sheep with Arrow keys or WASD.
+- Use the on-screen direction buttons on touch devices.
+- Reach the station marker to trigger the placeholder win message.
+- Use **Restart** to reset the placeholder state.
+
 ## Validate changes
 
 ```sh
@@ -38,7 +45,7 @@ npm run build
 ```
 
 - `npm run lint` runs dependency-free JavaScript syntax and formatting checks.
-- `npm run test` runs lightweight smoke tests for the placeholder static app wiring.
+- `npm run test` runs lightweight smoke tests for the placeholder static app wiring and expected mini-game markup.
 - `npm run build` validates the static app and writes the generated site to `dist/`.
 
-These checks keep the placeholder app healthy while the project remains a simple vanilla JavaScript browser game.
+These checks keep the placeholder vertical slice healthy while the project remains a simple vanilla JavaScript browser game. They do not test or claim to test final Sheep Station gameplay mechanics.
