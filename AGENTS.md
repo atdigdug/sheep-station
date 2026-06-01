@@ -11,3 +11,6 @@
   - `npm run lint`
   - `npm run test`
   - `npm run build`
+- GitHub Pages deployment is branch-based from `main` with the `/root` folder selected in repository settings.
+- Do not reintroduce custom GitHub Pages deployment workflows or Pages Actions unless explicitly requested.
+- Preserve the vanilla JavaScript/static root publishing model: root `index.html` should load root `styles.css` and `game.js` via relative paths.
