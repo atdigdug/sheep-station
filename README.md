@@ -31,6 +31,8 @@ The included lightweight Node.js server prints a local development URL that can 
 
 ## GitHub Pages
 
+The deployment workflow publishes the static `dist/` build with GitHub Actions. In the repository settings, configure **Pages** to use **GitHub Actions** as the source. If Pages has not been enabled yet and you want the workflow to enable it automatically, add a `PAGES_TOKEN` repository secret with permission to manage Pages settings.
+
 When GitHub Pages is enabled for this repository, the deployed site will be available at:
 
 <https://YOUR_GITHUB_USERNAME.github.io/sheep-station/>
