@@ -1,17 +1,21 @@
 const playfield = document.querySelector("#playfield");
-const player = document.querySelector("#player");
-const goal = document.querySelector("#goal");
+const playerToken = document.querySelector("#player");
+const stationMarker = document.querySelector("#goal");
 const statusMessage = document.querySelector("#status-message");
 const restartButton = document.querySelector("#restart-button");
 const directionButtons = document.querySelectorAll("[data-direction]");
 
-const gameState = {
+const initialPlayerPosition = {
+  x: 24,
+  y: 24
+};
+
+const placeholderState = {
   mode: "initial",
-  keys: new Set(),
+  activeDirections: new Set(),
   lastFrameTime: 0,
   player: {
-    x: 24,
-    y: 24,
+    ...initialPlayerPosition,
     size: 32,
     speed: 180
   },
@@ -50,71 +54,63 @@ function setStatus(text) {
   statusMessage.textContent = text;
 }
 
-function positionGoal() {
+function placeGoalNearFarCorner() {
   const bounds = getPlayfieldSize();
-  gameState.goal.x = Math.max(16, bounds.width - gameState.goal.size - 24);
-  gameState.goal.y = Math.max(16, bounds.height - gameState.goal.size - 24);
+
+  placeholderState.goal.x = Math.max(16, bounds.width - placeholderState.goal.size - 24);
+  placeholderState.goal.y = Math.max(16, bounds.height - placeholderState.goal.size - 24);
 }
 
-function render() {
-  player.style.inlineSize = `${gameState.player.size}px`;
-  player.style.blockSize = `${gameState.player.size}px`;
-  player.style.transform = `translate(${gameState.player.x}px, ${gameState.player.y}px)`;
+function renderPlaceholder() {
+  playerToken.style.inlineSize = `${placeholderState.player.size}px`;
+  playerToken.style.blockSize = `${placeholderState.player.size}px`;
+  playerToken.style.transform = `translate(${placeholderState.player.x}px, ${placeholderState.player.y}px)`;
 
-  goal.style.inlineSize = `${gameState.goal.size}px`;
-  goal.style.blockSize = `${gameState.goal.size}px`;
-  goal.style.transform = `translate(${gameState.goal.x}px, ${gameState.goal.y}px)`;
+  stationMarker.style.inlineSize = `${placeholderState.goal.size}px`;
+  stationMarker.style.blockSize = `${placeholderState.goal.size}px`;
+  stationMarker.style.transform = `translate(${placeholderState.goal.x}px, ${placeholderState.goal.y}px)`;
 
-  playfield.dataset.state = gameState.mode;
+  playfield.dataset.state = placeholderState.mode;
 }
 
-function resetGame() {
-  gameState.mode = "initial";
-  gameState.keys.clear();
-  gameState.lastFrameTime = 0;
-  gameState.player.x = 24;
-  gameState.player.y = 24;
-  positionGoal();
+function resetPlaceholder() {
+  placeholderState.mode = "initial";
+  placeholderState.activeDirections.clear();
+  placeholderState.lastFrameTime = 0;
+  placeholderState.player.x = initialPlayerPosition.x;
+  placeholderState.player.y = initialPlayerPosition.y;
+  placeGoalNearFarCorner();
   setStatus("Guide the placeholder sheep to the station marker.");
-  render();
+  renderPlaceholder();
   playfield.focus({ preventScroll: true });
 }
 
 function hasReachedGoal() {
   return (
-    gameState.player.x < gameState.goal.x + gameState.goal.size &&
-    gameState.player.x + gameState.player.size > gameState.goal.x &&
-    gameState.player.y < gameState.goal.y + gameState.goal.size &&
-    gameState.player.y + gameState.player.size > gameState.goal.y
+    placeholderState.player.x < placeholderState.goal.x + placeholderState.goal.size &&
+    placeholderState.player.x + placeholderState.player.size > placeholderState.goal.x &&
+    placeholderState.player.y < placeholderState.goal.y + placeholderState.goal.size &&
+    placeholderState.player.y + placeholderState.player.size > placeholderState.goal.y
   );
 }
 
-function updatePlayer(deltaSeconds) {
-  if (gameState.keys.size === 0 || gameState.mode === "placeholder-win") {
-    return;
-  }
-
-  if (gameState.mode === "initial") {
-    gameState.mode = "playing";
-    setStatus("Playing placeholder slice. Reach the station marker!");
-  }
-
+function getMovementVector() {
   let horizontal = 0;
   let vertical = 0;
 
-  if (gameState.keys.has("left")) {
+  if (placeholderState.activeDirections.has("left")) {
     horizontal -= 1;
   }
 
-  if (gameState.keys.has("right")) {
+  if (placeholderState.activeDirections.has("right")) {
     horizontal += 1;
   }
 
-  if (gameState.keys.has("up")) {
+  if (placeholderState.activeDirections.has("up")) {
     vertical -= 1;
   }
 
-  if (gameState.keys.has("down")) {
+  if (placeholderState.activeDirections.has("down")) {
     vertical += 1;
   }
 
@@ -123,37 +119,60 @@ function updatePlayer(deltaSeconds) {
     vertical *= Math.SQRT1_2;
   }
 
+  return { horizontal, vertical };
+}
+
+function updatePlaceholder(deltaSeconds) {
+  if (placeholderState.activeDirections.size === 0 || placeholderState.mode === "placeholder-win") {
+    return;
+  }
+
+  if (placeholderState.mode === "initial") {
+    placeholderState.mode = "playing";
+    setStatus("Playing placeholder slice. Reach the station marker!");
+  }
+
+  const { horizontal, vertical } = getMovementVector();
   const bounds = getPlayfieldSize();
-  const distance = gameState.player.speed * deltaSeconds;
-  gameState.player.x = clamp(gameState.player.x + horizontal * distance, 0, bounds.width - gameState.player.size);
-  gameState.player.y = clamp(gameState.player.y + vertical * distance, 0, bounds.height - gameState.player.size);
+  const distance = placeholderState.player.speed * deltaSeconds;
+
+  placeholderState.player.x = clamp(
+    placeholderState.player.x + horizontal * distance,
+    0,
+    bounds.width - placeholderState.player.size
+  );
+  placeholderState.player.y = clamp(
+    placeholderState.player.y + vertical * distance,
+    0,
+    bounds.height - placeholderState.player.size
+  );
 
   if (hasReachedGoal()) {
-    gameState.mode = "placeholder-win";
-    gameState.keys.clear();
+    placeholderState.mode = "placeholder-win";
+    placeholderState.activeDirections.clear();
     setStatus("Goal reached — placeholder win!");
   }
 }
 
 function gameLoop(timestamp) {
-  if (gameState.lastFrameTime === 0) {
-    gameState.lastFrameTime = timestamp;
+  if (placeholderState.lastFrameTime === 0) {
+    placeholderState.lastFrameTime = timestamp;
   }
 
-  const deltaSeconds = Math.min((timestamp - gameState.lastFrameTime) / 1000, 0.05);
-  gameState.lastFrameTime = timestamp;
+  const deltaSeconds = Math.min((timestamp - placeholderState.lastFrameTime) / 1000, 0.05);
+  placeholderState.lastFrameTime = timestamp;
 
-  updatePlayer(deltaSeconds);
-  render();
+  updatePlaceholder(deltaSeconds);
+  renderPlaceholder();
   window.requestAnimationFrame(gameLoop);
 }
 
 function setDirection(direction, isPressed) {
   if (isPressed) {
-    gameState.keys.add(direction);
+    placeholderState.activeDirections.add(direction);
     playfield.focus({ preventScroll: true });
   } else {
-    gameState.keys.delete(direction);
+    placeholderState.activeDirections.delete(direction);
   }
 }
 
@@ -203,19 +222,22 @@ function bindTouchControls() {
   });
 }
 
-if (playfield && player && goal && statusMessage && restartButton) {
+function keepPiecesWithinPlayfield() {
+  const bounds = getPlayfieldSize();
+
+  placeGoalNearFarCorner();
+  placeholderState.player.x = clamp(placeholderState.player.x, 0, bounds.width - placeholderState.player.size);
+  placeholderState.player.y = clamp(placeholderState.player.y, 0, bounds.height - placeholderState.player.size);
+  renderPlaceholder();
+}
+
+if (playfield && playerToken && stationMarker && statusMessage && restartButton) {
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("keyup", handleKeyUp);
-  window.addEventListener("blur", () => gameState.keys.clear());
-  window.addEventListener("resize", () => {
-    const bounds = getPlayfieldSize();
-    positionGoal();
-    gameState.player.x = clamp(gameState.player.x, 0, bounds.width - gameState.player.size);
-    gameState.player.y = clamp(gameState.player.y, 0, bounds.height - gameState.player.size);
-    render();
-  });
-  restartButton.addEventListener("click", resetGame);
+  window.addEventListener("blur", () => placeholderState.activeDirections.clear());
+  window.addEventListener("resize", keepPiecesWithinPlayfield);
+  restartButton.addEventListener("click", resetPlaceholder);
   bindTouchControls();
-  resetGame();
+  resetPlaceholder();
   window.requestAnimationFrame(gameLoop);
 }
