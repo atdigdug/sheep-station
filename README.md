@@ -31,7 +31,17 @@ The included lightweight Node.js server prints a local development URL that can 
 
 ## GitHub Pages
 
-When GitHub Pages is enabled for this repository, the deployed site will be available at:
+This repository is intended to be published directly from the static files at the repository root. Do not use a custom GitHub Actions Pages deployment workflow for the normal site.
+
+In the GitHub repository settings, configure **Pages** with:
+
+- **Source:** Deploy from a branch
+- **Branch:** `main`
+- **Folder:** `/root`
+
+With that branch-based Pages setup, the playable placeholder site is served from the root `index.html` and its relative `styles.css` and `game.js` references. GitHub Pages does not need to run Vite or any custom build step to publish the site.
+
+When GitHub Pages is enabled for this repository, the site will be available at:
 
 <https://YOUR_GITHUB_USERNAME.github.io/sheep-station/>
 
