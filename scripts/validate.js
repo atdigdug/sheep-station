@@ -9,8 +9,8 @@ export async function validateStaticApp() {
   const checks = [
     [/<title>Sheep Station<\/title>/, "index.html should set the Sheep Station page title"],
     [/<h1[^>]*>Sheep Station<\/h1>/, "index.html should show the Sheep Station heading"],
-    [/href="\/styles\.css"/, "index.html should load styles.css"],
-    [/src="\/game\.js"/, "index.html should load game.js"],
+    [/href="\.\/styles\.css"/, "index.html should load styles.css"],
+    [/src="\.\/game\.js"/, "index.html should load game.js"],
     [/real Sheep Station gameplay implementation will come later/i, "index.html should describe the placeholder status"],
     [/id="playfield"/, "index.html should include the placeholder playfield"],
     [/id="restart-button"/, "index.html should include a restart button"]
