@@ -73,9 +73,20 @@ test("year resolution applies mortgage, flock, harvest, and market tables", () =
   assert.equal(result.station.grainValue, 0.1);
 });
 
-test("command validation recognizes original 666 and 999 entries", () => {
-  assert.equal(validateDecisions(cloneInitialStation(), { buyAcres: "666" }).command, "666");
-  assert.equal(validateDecisions(cloneInitialStation(), { buyAcres: "999" }).command, "999");
+test("decision validation treats numeric entries as yearly orders", () => {
+  const result = validateDecisions(cloneInitialStation(), {
+    buyAcres: "666",
+    sellAcres: 0,
+    tradeSheep: 0,
+    tradeFor: "money",
+    grazingAcres: 100,
+    feedGrain: 9000,
+    sowAcres: 100,
+    sowGrainPerAcre: 10
+  });
+
+  assert.equal(result.command, undefined);
+  assert.ok(result.errors.includes("You do not have enough post-mortgage cash to buy that much land."));
 });
 
 test("static app validation passes", async () => {

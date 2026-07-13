@@ -74,11 +74,6 @@ export function normalizeDecisions(rawDecisions) {
 export function validateDecisions(station, rawDecisions) {
   const decisions = normalizeDecisions(rawDecisions);
   const errors = [];
-  const command = Object.values(rawDecisions).find((value) => value === "666" || value === "999");
-
-  if (command) {
-    return { command, decisions, errors };
-  }
 
   for (const [key, value] of Object.entries(decisions)) {
     if (key !== "tradeFor" && !Number.isFinite(value)) {
@@ -138,13 +133,13 @@ export function validateDecisions(station, rawDecisions) {
     errors.push("You do not have enough grain left to sow that many acres.");
   }
 
-  return { command: null, decisions, errors };
+  return { decisions, errors };
 }
 
 export function resolveYear(station, rawDecisions) {
   const validation = validateDecisions(station, rawDecisions);
 
-  if (validation.command || validation.errors.length > 0) {
+  if (validation.errors.length > 0) {
     return { station, report: null, ...validation };
   }
 
@@ -198,7 +193,7 @@ export function resolveYear(station, rawDecisions) {
     stationValue: calculateStationValue(next)
   };
 
-  return { station: next, decisions, report, command: null, errors: [] };
+  return { station: next, decisions, report, errors: [] };
 }
 
 function lookupFlockRates(flockRatio) {

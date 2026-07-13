@@ -29,11 +29,6 @@ let station = cloneInitialStation();
 
 function readDecisions() {
   const data = new FormData(form);
-  const command = data.get("command")?.trim();
-
-  if (command === "666" || command === "999") {
-    return { command };
-  }
 
   return {
     buyAcres: data.get("buyAcres"),
@@ -64,7 +59,7 @@ function renderReport(report) {
   if (!report) {
     appendReportLine("Welcome to Sheep Station.");
     appendReportLine("The station was worth $50,000 before you became manager.");
-    appendReportLine("Use the yearly orders to begin, or enter 666 for advice.");
+    appendReportLine("Use the yearly orders to begin, or press Advice for hints.");
     return;
   }
 
@@ -99,7 +94,7 @@ function showValidation(messages) {
 function showAdvice() {
   const plan = calculateAdvicePlan(station);
   reportOutput.innerHTML = "";
-  appendReportLine("666 ADVICE");
+  appendReportLine("ADVICE");
   adviceText.forEach((line) => appendReportLine(line));
   appendReportLine(`For your current station, try about ${formatNumber(plan.grazingAcres)} grazing acres, ${formatNumber(plan.feedGrain)} kg of feed, ${formatNumber(plan.sowAcres)} sowing acres, and 10 kg sown per acre.`);
   showValidation([]);
@@ -138,7 +133,6 @@ function setRecommendedInputs() {
   form.elements.buyAcres.value = 0;
   form.elements.sellAcres.value = 0;
   form.elements.tradeSheep.value = 0;
-  form.elements.command.value = "";
 }
 
 function handleSubmit(event) {
@@ -149,17 +143,6 @@ function handleSubmit(event) {
   }
 
   const decisions = readDecisions();
-
-  if (decisions.command === "666") {
-    showAdvice();
-    form.elements.command.value = "";
-    return;
-  }
-
-  if (decisions.command === "999") {
-    quitGame();
-    return;
-  }
 
   const result = resolveYear(station, decisions);
 

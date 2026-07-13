@@ -15,8 +15,8 @@ export async function validateStaticApp() {
     [/id="decision-form"/, "index.html should include the yearly decision form"],
     [/id="report-output"/, "index.html should include the yearly report panel"],
     [/Second Giant Book of Computer Games/, "index.html should credit the source book"],
-    [/666/, "index.html should expose the advice command"],
-    [/999/, "index.html should expose the quit command"]
+    [/id="advice-button"/, "index.html should expose the advice button"],
+    [/id="quit-button"/, "index.html should expose the quit button"]
   ];
 
   for (const [pattern, message] of checks) {
