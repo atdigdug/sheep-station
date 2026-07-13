@@ -29,12 +29,12 @@ The server prints a local development URL that can be opened in a browser.
 - Each year begins with an automatic $1,000 mortgage payment to the bank.
 - You then choose whether to buy or sell land, whether to trade sheep for money or grain, how many acres to graze, how much grain to feed the flock, how many acres to sow, and how much grain to sow per acre.
 - The yearly report shows sheep born, sheep deaths, grain harvested, land value, grain value, and total station value.
-- Enter `666` in the command field or use the advice button for original-style management advice.
-- Enter `999` in the command field or use the quit button to end the run and value the station.
+- Use the Advice button for original-style management advice.
+- Use the Quit button to end the run and value the station.
 
 ## Implementation notes
 
-- The browser version preserves the original management loop, starting resources, yearly mortgage, market tables, sheep birth/death table behavior, advice command, and quit command.
+- The browser version preserves the original management loop, starting resources, yearly mortgage, market tables, sheep birth/death table behavior, advice and quit actions.
 - The UI presents the yearly BASIC prompts as a mobile-first form with validation, resource cards, and a report panel instead of requiring only raw typed input.
 - Logic is split into `logic.js` so the simulation rules can be checked independently from DOM rendering in `game.js`.
 - The original book prose and BASIC listing are not copied into the interface; copy and layout are original for this adaptation.

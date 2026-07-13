@@ -185,10 +185,6 @@ select:focus {
   outline-offset: 2px;
 }
 
-.command-line {
-  margin-block-start: 0.8rem;
-}
-
 .validation-message {
   display: none;
   padding: 0.75rem;
