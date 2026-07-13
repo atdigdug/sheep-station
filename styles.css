@@ -71,7 +71,8 @@ select {
 .hero-card,
 .decision-form,
 .report-panel,
-.how-to-play {
+.how-to-play,
+.about-note {
   padding: 1rem;
 }
 
@@ -105,15 +106,10 @@ h2 {
 }
 
 .intro,
-.credit,
+.about-note p,
 .how-to-play li,
 .report-output p {
   line-height: 1.55;
-}
-
-.credit {
-  margin-block-end: 0;
-  color: var(--muted);
 }
 
 .status-grid {
@@ -285,6 +281,25 @@ select:disabled {
   margin-block-start: 0.5rem;
 }
 
+.about-note {
+  color: var(--muted);
+  font-size: 0.86rem;
+  opacity: 0.88;
+}
+
+.about-note h2 {
+  margin-block-end: 0.35rem;
+  font-size: 1rem;
+}
+
+.about-note p {
+  margin-block-end: 0.35rem;
+}
+
+.about-note p:last-child {
+  margin-block-end: 0;
+}
+
 @media (min-width: 42rem) {
   .app-shell {
     padding: 1.5rem;
@@ -313,7 +328,8 @@ select:disabled {
   .hero-card,
   .decision-form,
   .report-panel,
-  .how-to-play {
+  .how-to-play,
+  .about-note {
     padding: 1.25rem;
   }
 }
